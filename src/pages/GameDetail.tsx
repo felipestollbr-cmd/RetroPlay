@@ -51,8 +51,6 @@ export default function GameDetail() {
     }
   }, [game]);
 
-  const isArchiveNativeLaunch = !!game && (game.provider === 'archive' || game.playUrl?.includes('archive.org'));
-
   const handlePlay = () => {
     if (!canPlay()) {
       navigate('/plans');
@@ -60,20 +58,8 @@ export default function GameDetail() {
     }
     incrementPlay();
 
-    if (isArchiveNativeLaunch) {
-      if (game?.consoleId && game?.slug) {
-        setPlayError(null);
-        navigate(`/play/${game.consoleId}/${game.slug}`);
-        return;
-      }
-
-      setPlayError(
-        'Este jogo do Archive.org precisa de metadados de console/slug para abrir no emulador nativo. Por enquanto, ele não pode ser exibido diretamente nesta plataforma.'
-      );
-      return;
-    }
-
     if (game?.isBrowserGame && game.playUrl) {
+      setPlayError(null);
       setPlaying(true);
     } else if (game?.playUrl) {
       window.open(game.playUrl, '_blank');
@@ -192,7 +178,7 @@ export default function GameDetail() {
                   className="w-full py-3.5 bg-white text-[#0f0f1a] rounded-xl font-bold text-sm hover:bg-white/90 transition-colors flex items-center justify-center gap-2"
                 >
                   <Play className="w-4 h-4 fill-current" />
-                  {isArchiveNativeLaunch ? 'Jogar na Plataforma' : 'Jogar no Navegador'}
+                  Jogar na Plataforma
                 </button>
               )}
 
@@ -406,7 +392,7 @@ export default function GameDetail() {
                   <p className="text-white font-medium text-sm">{game.providerName}</p>
                   <p className="text-white/30 text-xs">
                     {game.isBrowserGame
-                      ? 'Jogue diretamente no navegador'
+                      ? 'Jogue diretamente na plataforma'
                       : game.downloadUrl
                       ? 'Download disponível'
                       : 'Disponível na loja oficial'}
@@ -419,7 +405,7 @@ export default function GameDetail() {
       </div>
 
       {/* Browser Game Player */}
-      {playing && game.isBrowserGame && game.playUrl && !isArchiveNativeLaunch && (
+      {playing && game.isBrowserGame && game.playUrl && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
