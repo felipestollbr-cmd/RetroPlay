@@ -29,11 +29,13 @@ export default function Register() {
 
     try {
       await signUp(email, password);
-      // Após o cadastro, o Supabase pode enviar um e-mail de confirmação.
-      // Se você desabilitou a confirmação de email, o usuário já estará logado.
-      navigate('/'); // redireciona para home
-    } catch (err: any) {
-      setError(err.message || 'Erro ao criar conta');
+      navigate('/');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Erro ao criar conta');
+      }
     } finally {
       setLoading(false);
     }
@@ -79,7 +81,7 @@ export default function Register() {
         </button>
       </form>
       <p>
-        Já tem uma conta? <Link to="/login">Faça login</Link>
+        Já tem conta? <Link to="/login">Faça login</Link>
       </p>
     </div>
   );
