@@ -228,7 +228,34 @@ export const GBA_GAMES: GameEntry[] = [
   },
 ];
 
-export const N64_GAMES: GameEntry[] = [
+export const ATARI_GAMES: GameEntry[] = [
+  {
+    id: 'atari-1', title: 'Pac-Man', slug: 'pac-man',
+    description: 'Ajude Pac-Man a devorar pontos e evitar fantasmas em um labirinto clássico.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/5/5d/Pac-Man_Cover_Art.jpg',
+    rating: 4.4, year: 1981, genre: 'Arcade', developer: 'Atari', players: '1-2'
+  },
+  {
+    id: 'atari-2', title: 'Adventure', slug: 'adventure',
+    description: 'Explore um mundo medieval pixelado em busca do cálice mágico.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/7/73/Adventure_Atari_2600_box_art.jpg',
+    rating: 4.2, year: 1980, genre: 'Adventure', developer: 'Atari', players: '1-2'
+  },
+  {
+    id: 'atari-3', title: 'Space Invaders', slug: 'space-invaders',
+    description: 'Defenda a Terra contra ondas de invasores espaciais clássicos.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/5/59/Space_Invaders_2600.png',
+    rating: 4.4, year: 1980, genre: 'Shooter', developer: 'Taito', players: '1-2'
+  },
+  {
+    id: 'atari-4', title: 'Frogger', slug: 'frogger',
+    description: 'Ajude o sapo a atravessar estradas e rios em segurança.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/8/83/Frogger_2600_box.jpg',
+    rating: 4.1, year: 1982, genre: 'Arcade', developer: 'Konami', players: '1-2'
+  },
+];
+
+export const N64_GAMES: GameEntry[] = [ 
   {
     id: 'n64-1', title: 'Super Mario 64', slug: 'super-mario-64',
     description: 'Mario explora o Castelo da Peach em 3D pela primeira vez.',
@@ -308,6 +335,7 @@ const ALL_GAMES: Record<string, GameEntry[]> = {
   snes: SNES_GAMES,
   segaMD: GENESIS_GAMES,
   gb: GB_GAMES,
+  atari2600: ATARI_GAMES,
   gba: GBA_GAMES,
   n64: N64_GAMES,
   psx: PSX_GAMES,

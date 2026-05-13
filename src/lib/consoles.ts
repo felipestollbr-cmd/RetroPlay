@@ -77,6 +77,21 @@ export const CONSOLES: ConsoleInfo[] = [
     description: 'O portátil que colocou o mundo dos jogos no seu bolso.'
   },
   {
+    id: 'atari2600',
+    name: 'Atari 2600',
+    shortName: 'Atari',
+    manufacturer: 'Atari',
+    year: 1977,
+    ejsCore: 'stella',
+    rawgPlatformId: 22,
+    extensions: ['.a26', '.bin', '.zip'],
+    biosRequired: false,
+    color: '#f97316',
+    gradient: 'from-orange-600 to-orange-800',
+    icon: 'gamepad-2',
+    description: 'Clássicos atemporais do Atari 2600, com gráficos retrô e jogabilidade imediata.'
+  },
+  {
     id: 'gba',
     name: 'Game Boy Advance',
     shortName: 'GBA',

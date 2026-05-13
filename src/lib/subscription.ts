@@ -316,16 +316,16 @@ export function logout(): void {
 export function getAvailableConsoles(): string[] {
   const user = getUser();
   if (user?.isAdmin) {
-    return ['nes', 'gb', 'snes', 'segaMD', 'gba', 'n64', 'psx', 'nds'];
+    return ['nes', 'gb', 'snes', 'segaMD', 'gba', 'n64', 'psx', 'nds', 'atari2600'];
   }
   const plan = getPlan();
   switch (plan.id) {
     case 'free':
       return ['nes', 'gb', 'snes'];
     case 'pro':
-      return ['nes', 'gb', 'snes', 'segaMD', 'gba', 'n64'];
+      return ['nes', 'gb', 'snes', 'segaMD', 'gba', 'n64', 'atari2600'];
     case 'premium':
     default:
-      return ['nes', 'gb', 'snes', 'segaMD', 'gba', 'n64', 'psx', 'nds'];
+      return ['nes', 'gb', 'snes', 'segaMD', 'gba', 'n64', 'psx', 'nds', 'atari2600'];
   }
 }

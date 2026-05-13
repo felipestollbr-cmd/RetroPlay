@@ -18,6 +18,7 @@ const DEFAULT_CONTROLS: Record<string, { label: string; key: string }[]> = {
   nes:  [{ label: 'A', key: 'Z' }, { label: 'B', key: 'X' }, { label: 'Start', key: 'Enter' }, { label: 'Select', key: 'Shift' }, { label: 'Direcional', key: '↑↓←→' }],
   snes: [{ label: 'A', key: 'X' }, { label: 'B', key: 'Z' }, { label: 'X', key: 'S' }, { label: 'Y', key: 'A' }, { label: 'Start', key: 'Enter' }],
   gba:  [{ label: 'A', key: 'X' }, { label: 'B', key: 'Z' }, { label: 'L', key: 'A' }, { label: 'R', key: 'S' }, { label: 'Start', key: 'Enter' }],
+  atari2600: [{ label: 'Fire', key: 'Z' }, { label: 'Direcional', key: '↑↓←→' }, { label: 'Start', key: 'Enter' }],
   default: [{ label: 'Movimento', key: '↑↓←→' }, { label: 'Ação', key: 'Z/X' }, { label: 'Start', key: 'Enter' }, { label: 'Menu', key: 'Esc' }],
 };
 
