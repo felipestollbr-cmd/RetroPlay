@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Home() {
-  const navigate = useNavigate();
-  useEffect(() => {
-    navigate('/', { replace: true });
-  }, [navigate]);
-  return null;
+  const { user, signOut } = useAuth();
+  return (
+    <div>
+      <h1>Bem-vindo ao RetroPlay, {user?.email}!</h1>
+      <button onClick={signOut}>Sair</button>
+    </div>
+  );
 }
