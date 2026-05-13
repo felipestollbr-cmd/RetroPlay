@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Globe, Bluetooth, Sparkles, Search, Loader2, Gamepad2 } from 'lucide-react';
+import { Zap, Globe, Bluetooth, Sparkles, Search, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { searchAllProviders, mergeAndDeduplicate, sortGames, filterGames, PROVIDERS } from '../lib/providers';
 import type { CuratedGame, ProviderSearchOptions } from '../lib/providers';
 import { CONSOLES } from '../lib/consoles';
 import { getAvailableConsoles } from '../lib/subscription';
 import CuratedGameCard from '../components/CuratedGameCard';
+import ConsoleCard from '../components/ConsoleCard';
 import GameCarousel from '../components/GameCarousel';
 import ProviderFilter from '../components/ProviderFilter';
 import SearchBar from '../components/SearchBar';
@@ -126,38 +127,10 @@ export default function Discovery() {
                 <p className="text-white/40 text-sm">Jogue clássicos com emulador no navegador</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-              {CONSOLES.map((c) => {
-                const isAvailable = availableConsoles.includes(c.id);
-                return (
-                  <Link
-                    key={c.id}
-                    to={isAvailable ? `/console/${c.id}` : '/plans'}
-                    className={`group relative p-4 rounded-2xl border transition-all duration-300 ${
-                      isAvailable
-                        ? 'bg-white/[0.03] border-white/[0.06] hover:border-white/20 hover:bg-white/[0.06]'
-                        : 'bg-white/[0.01] border-white/[0.04] opacity-50 cursor-not-allowed'
-                    }`}
-                  >
-                    <div
-                      className={`w-10 h-10 rounded-xl bg-gradient-to-br ${c.gradient} flex items-center justify-center mx-auto mb-2 shadow-lg group-hover:scale-110 transition-transform`}
-                    >
-                      <Gamepad2 className="w-5 h-5 text-white" />
-                    </div>
-                    <p className="text-center text-xs font-bold text-white/80 group-hover:text-white transition-colors">
-                      {c.shortName}
-                    </p>
-                    <p className="text-center text-[10px] text-white/30 mt-0.5">{c.year}</p>
-                    {!isAvailable && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/40">
-                        <span className="text-[10px] font-bold text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded-full">
-                          PRO
-                        </span>
-                      </div>
-                    )}
-                  </Link>
-                );
-              })}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+              {CONSOLES.map((c, index) => (
+                <ConsoleCard key={c.id} console={c} index={index} />
+              ))}
             </div>
           </div>
         </section>

@@ -201,6 +201,57 @@ export const GB_GAMES: GameEntry[] = [
   },
 ];
 
+export const GBC_GAMES: GameEntry[] = [
+  {
+    id: 'gbc-1', title: 'Pokemon Gold', slug: 'pokemon-gold',
+    description: 'Explore Johto em um clássico RPG portátil colorido.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/2/25/Pok%C3%A9mon_Gold_Boxart.jpg',
+    rating: 4.8, year: 1999, genre: 'RPG', developer: 'Game Freak', players: '1-2'
+  },
+  {
+    id: 'gbc-2', title: 'The Legend of Zelda: Oracle of Ages', slug: 'oracle-of-ages',
+    description: 'Link viaja por dois mundos para recuperar as esmeraldas sagradas.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/5/5f/Boxart_zelda_oracle_of_ages.png',
+    rating: 4.7, year: 2001, genre: 'Action-Adventure', developer: 'Capcom', players: '1'
+  },
+  {
+    id: 'gbc-3', title: 'Mario Golf', slug: 'mario-golf-gbc',
+    description: 'Golf leve com personagens da Nintendo em campos coloridos.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/4/49/Mario_Golf_box_art.jpg',
+    rating: 4.4, year: 1999, genre: 'Sports', developer: 'Camelot', players: '1-4'
+  },
+];
+
+export const ARCADE_GAMES: GameEntry[] = [
+  {
+    id: 'arcade-1', title: 'Pac-Man', slug: 'pac-man-arcade',
+    description: 'Goblins comem bolas em labirintos coloridos.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/5/5d/Pac-Man_Cover_Art.jpg',
+    rating: 4.4, year: 1980, genre: 'Arcade', developer: 'Namco', players: '1-2'
+  },
+  {
+    id: 'arcade-2', title: 'Street Fighter II', slug: 'street-fighter-ii-arcade',
+    description: 'Duelos intensos com personagens icônicos e combos memoráveis.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/1/1d/SF2_JPN_flyer.jpg',
+    rating: 4.7, year: 1991, genre: 'Fighting', developer: 'Capcom', players: '1-2'
+  },
+];
+
+export const DOS_GAMES: GameEntry[] = [
+  {
+    id: 'dos-1', title: 'Doom', slug: 'doom-dos',
+    description: 'Dedique-se a uma aventura visceral de tiro em primeira pessoa.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/5/57/Doom_cover_art.jpg',
+    rating: 4.8, year: 1993, genre: 'FPS', developer: 'id Software', players: '1'
+  },
+  {
+    id: 'dos-2', title: 'Commander Keen', slug: 'commander-keen',
+    description: 'O jovem Billy viaja por planetas alienígenas em um clássico plataforma.',
+    coverUrl: 'https://upload.wikimedia.org/wikipedia/en/d/d8/Commander_Keen_cover_art.jpg',
+    rating: 4.3, year: 1990, genre: 'Platformer', developer: 'id Software', players: '1'
+  },
+];
+
 export const GBA_GAMES: GameEntry[] = [
   {
     id: 'gba-1', title: 'Pokemon FireRed', slug: 'pokemon-firered',
@@ -335,6 +386,9 @@ const ALL_GAMES: Record<string, GameEntry[]> = {
   snes: SNES_GAMES,
   segaMD: GENESIS_GAMES,
   gb: GB_GAMES,
+  gbc: GBC_GAMES,
+  arcade: ARCADE_GAMES,
+  dos: DOS_GAMES,
   atari2600: ATARI_GAMES,
   gba: GBA_GAMES,
   n64: N64_GAMES,

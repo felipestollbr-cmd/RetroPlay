@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Play, ExternalLink, Download, Star, Calendar, User, Tag, Globe, Heart, Share2, Monitor } from 'lucide-react';
+import { ArrowLeft, Play, ExternalLink, Download, Star, Calendar, User, Tag, Globe, Heart, Share2, Monitor, Video } from 'lucide-react';
 import { searchAllProviders, mergeAndDeduplicate } from '../lib/providers';
 import type { CuratedGame } from '../lib/providers';
-import { canPlay, incrementPlay } from '../lib/subscription';
+import { canPlay, incrementPlay, getUser } from '../lib/subscription';
+import {
+  getVideoIdFromYouTubeUrl,
+  getVideosByGame,
+  saveVideoSubmission,
+  VideoSubmission,
+} from '../lib/videoSubmissions';
 
 export default function GameDetail() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -13,6 +19,11 @@ export default function GameDetail() {
   const [loading, setLoading] = useState(true);
   const [playing, setPlaying] = useState(false);
   const [playError, setPlayError] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState('');
+  const [videoError, setVideoError] = useState('');
+  const [videoSubmitting, setVideoSubmitting] = useState(false);
+  const [videos, setVideos] = useState<VideoSubmission[]>([]);
+  const user = getUser();
 
   useEffect(() => {
     const loadGame = async () => {
@@ -33,6 +44,12 @@ export default function GameDetail() {
     };
     loadGame();
   }, [gameId]);
+
+  useEffect(() => {
+    if (game?.id) {
+      setVideos(getVideosByGame(game.id));
+    }
+  }, [game]);
 
   const isArchiveNativeLaunch = !!game && (game.provider === 'archive' || game.playUrl?.includes('archive.org'));
 
@@ -67,6 +84,29 @@ export default function GameDetail() {
     if (game?.downloadUrl) {
       window.open(game.downloadUrl, '_blank');
     }
+  };
+
+  const handleSubmitVideo = () => {
+    if (!user) {
+      setVideoError('Faça login para enviar um vídeo.');
+      return;
+    }
+    if (!game) {
+      setVideoError('Jogo inválido.');
+      return;
+    }
+    const videoId = getVideoIdFromYouTubeUrl(videoUrl);
+    if (!videoId) {
+      setVideoError('Insira uma URL válida do YouTube.');
+      return;
+    }
+    setVideoError('');
+    setVideoSubmitting(true);
+
+    const submission = saveVideoSubmission(game.id, videoUrl, user.name, user.email);
+    setVideos((current) => [submission, ...current]);
+    setVideoUrl('');
+    setVideoSubmitting(false);
   };
 
   const providerColors: Record<string, string> = {
@@ -251,6 +291,86 @@ export default function GameDetail() {
             </div>
 
             <p className="text-white/60 leading-relaxed mb-8">{game.description}</p>
+
+            {/* YouTube videos submitted by creators */}
+            <div className="mb-8 rounded-3xl border border-white/10 bg-white/5 p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Vídeos de YouTube</h3>
+                  <p className="text-sm text-white/50">Youtubers podem enviar reviews e avaliações vinculados a este jogo.</p>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-white/50">
+                  <Video className="w-4 h-4" />
+                  Conteúdo enviado pela comunidade
+                </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-white/80">URL do YouTube</label>
+                  <input
+                    value={videoUrl}
+                    onChange={(event) => setVideoUrl(event.target.value)}
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    className="w-full rounded-2xl border border-white/10 bg-[#0f172a] px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                  {videoError ? (
+                    <p className="text-sm text-red-300">{videoError}</p>
+                  ) : (
+                    <p className="text-sm text-white/40">
+                      {user
+                        ? 'Cole a URL do seu vídeo e clique em enviar. Apenas YouTube é aceito.'
+                        : 'Faça login para enviar vídeos e vincular seu canal ao jogo.'}
+                    </p>
+                  )}
+                </div>
+                <button
+                  onClick={handleSubmitVideo}
+                  disabled={videoSubmitting || !videoUrl.trim() || !user}
+                  className="whitespace-nowrap rounded-2xl bg-indigo-600 px-5 py-3 font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/40"
+                >
+                  {videoSubmitting ? 'Enviando...' : 'Enviar vídeo'}
+                </button>
+              </div>
+
+              <div className="mt-6 space-y-4">
+                {videos.length === 0 ? (
+                  <div className="rounded-2xl border border-white/10 bg-[#111827] p-4 text-sm text-white/50">
+                    Nenhum vídeo ainda. Seja o primeiro criador a enviar uma avaliação para este jogo.
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {videos.map((video) => (
+                      <div key={video.id} className="rounded-3xl border border-white/10 bg-[#0b1223] overflow-hidden">
+                        <div className="aspect-video bg-black">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${video.videoId}`}
+                            title={video.submittedBy}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="w-full h-full"
+                          />
+                        </div>
+                        <div className="p-4">
+                          <p className="text-sm text-white/70">Enviado por <span className="font-semibold text-white">{video.submittedBy}</span></p>
+                          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-white/40">
+                            <span>{new Date(video.submittedAt).toLocaleDateString('pt-BR')}</span>
+                            <a
+                              href={video.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-indigo-400 hover:text-indigo-300"
+                            >
+                              Abrir no YouTube
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
 
             {/* Tags */}
             <div className="mb-8">

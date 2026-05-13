@@ -34,12 +34,19 @@ export default function ConsoleCard({ console: c, index }: ConsoleCardProps) {
         />
         <div className="relative p-6">
           <div className="flex items-start justify-between mb-4">
-            <div
-              className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${c.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ${
-                !available ? 'opacity-40 grayscale' : ''
-              }`}
-            >
-              <Icon className="w-7 h-7 text-white" />
+            <div className={`relative w-20 h-20 rounded-2xl overflow-hidden shadow-lg group-hover:scale-105 transition-transform duration-300 ${!available ? 'opacity-40 grayscale' : ''}`}>
+              {c.imageUrl ? (
+                <img
+                  src={c.imageUrl}
+                  alt={c.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${c.gradient}`}>
+                  <Icon className="w-8 h-8 text-white" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/20" />
             </div>
             <div className="flex items-center gap-2">
               {!available && (

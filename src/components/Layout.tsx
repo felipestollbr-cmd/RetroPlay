@@ -36,7 +36,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { path: '/upload', icon: Upload, label: 'ROMs' },
   ];
 
-  const isPlayer = location.pathname.startsWith('/play/') || location.pathname.startsWith('/game/');
+  const isPlayer = location.pathname.startsWith('/play/');
 
   return (
     <div className="min-h-screen bg-[#0f0f1a] text-white">

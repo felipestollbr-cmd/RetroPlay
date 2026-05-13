@@ -18,6 +18,7 @@ const EJS_CORES: Record<string, string> = {
   segaMD:    'segaMD',
   n64:       'n64',
   ps1:       'psx',
+  psx:       'psx',
   atari2600: 'stella',
   nds:       'nds',
   arcade:    'mame2003',
@@ -140,6 +141,14 @@ export default function NativeEmulator({ gameId, consoleId, title, archiveFile }
     };
   }, [gameId, consoleId]);
 
+  useEffect(() => {
+    if (wrapRef.current && !document.fullscreenElement) {
+      wrapRef.current.requestFullscreen().catch(() => {
+        console.warn('Fullscreen request denied');
+      });
+    }
+  }, []);
+
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       wrapRef.current?.requestFullscreen();
@@ -175,11 +184,14 @@ export default function NativeEmulator({ gameId, consoleId, title, archiveFile }
     <div
       ref={wrapRef}
       style={{
-        position:     'relative',
-        width:        '100%',
+        position:     'fixed',
+        inset:        0,
+        width:        '100vw',
+        height:       '100vh',
         background:   '#000',
-        borderRadius: fullscreen ? 0 : 12,
+        borderRadius: 0,
         overflow:     'hidden',
+        zIndex:       50,
       }}
     >
       {/* Overlay de loading */}
@@ -238,13 +250,13 @@ export default function NativeEmulator({ gameId, consoleId, title, archiveFile }
         </div>
       )}
 
-      {/* Container do EmulatorJS — ID dinâmico por instância */}
+      {/* Container do EmulatorJS — fullscreen */}
       <div
         ref={containerRef}
         id={instanceId.current}
         style={{
           width: '100%',
-          aspectRatio: ratio,
+          height: '100%',
           display:     status === 'error' ? 'none' : 'block',
         }}
       />

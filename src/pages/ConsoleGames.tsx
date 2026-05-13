@@ -109,14 +109,25 @@ export default function ConsoleGames() {
               Voltar
             </Link>
 
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-8">
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">
-                  {consoleInfo.shortName}
-                </h1>
-                <p className="text-white/40">
-                  {consoleInfo.name} • {consoleInfo.manufacturer} • {consoleInfo.year}
-                </p>
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
+              <div className="flex items-start gap-5">
+                {consoleInfo.imageUrl && (
+                  <div className="w-32 h-20 overflow-hidden rounded-3xl bg-slate-900 shadow-xl">
+                    <img
+                      src={consoleInfo.imageUrl}
+                      alt={consoleInfo.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div>
+                  <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">
+                    {consoleInfo.shortName}
+                  </h1>
+                  <p className="text-white/40">
+                    {consoleInfo.name} • {consoleInfo.manufacturer} • {consoleInfo.year}
+                  </p>
+                </div>
               </div>
               <div className="w-full sm:w-80">
                 <SearchBar
