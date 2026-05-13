@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Gamepad2, Smartphone, Disc, Lock } from 'lucide-react';
@@ -16,6 +17,7 @@ interface ConsoleCardProps {
 }
 
 export default function ConsoleCard({ console: c, index }: ConsoleCardProps) {
+  const [imageError, setImageError] = useState(false);
   const Icon = iconMap[c.icon] || Gamepad2;
   const available = getAvailableConsoles().includes(c.id);
 
@@ -29,17 +31,25 @@ export default function ConsoleCard({ console: c, index }: ConsoleCardProps) {
         to={available ? `/console/${c.id}` : '/plans'}
         className="group block relative overflow-hidden rounded-3xl bg-white/[0.03] border border-white/[0.06] hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-500/10"
       >
+        {c.imageUrl && !imageError && (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${c.imageUrl})` }}
+          />
+        )}
+        <div className={`absolute inset-0 bg-black/30 ${c.imageUrl && !imageError ? 'group-hover:bg-black/25' : ''}`} />
         <div
-          className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
+          className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-30 group-hover:opacity-25 transition-opacity duration-500`}
         />
         <div className="relative p-6">
           <div className="flex items-start justify-between mb-4">
             <div className={`relative w-20 h-20 rounded-2xl overflow-hidden shadow-lg group-hover:scale-105 transition-transform duration-300 ${!available ? 'opacity-40 grayscale' : ''}`}>
-              {c.imageUrl ? (
+              {c.imageUrl && !imageError ? (
                 <img
                   src={c.imageUrl}
                   alt={c.name}
                   className="w-full h-full object-cover"
+                  onError={() => setImageError(true)}
                 />
               ) : (
                 <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${c.gradient}`}>
