@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, User, LogIn, Sparkles } from 'lucide-react';
-import { createUser, getUser } from '../lib/subscription';
+import { createUser, getUser, loginUser } from '../lib/subscription';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -35,8 +35,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
     // Simulate API call
     setTimeout(() => {
       if (mode === 'login') {
-        const existing = getUser();
-        if (existing && existing.email === email) {
+        const existing = loginUser(email);
+        if (existing) {
           onSuccess();
         } else {
           setError('Usuário não encontrado. Crie uma conta.');

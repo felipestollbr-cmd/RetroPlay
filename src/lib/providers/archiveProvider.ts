@@ -2,6 +2,27 @@ import type { CuratedGame, ProviderSearchOptions, SearchResult } from './types';
 
 const IA_BASE = 'https://archive.org';
 
+const PLATFORM_TO_CONSOLE: Record<string, string> = {
+  'MS-DOS': 'dos',
+  Windows: 'dos',
+  PC: 'dos',
+  'Software Library': 'dos',
+  'Atari 2600': 'atari2600',
+  'Atari 7800': 'atari2600',
+  'Sega Genesis': 'segaMD',
+  'Genesis': 'segaMD',
+  'Super Nintendo': 'snes',
+  'SNES': 'snes',
+  'Nintendo Entertainment System': 'nes',
+  NES: 'nes',
+  'Game Boy': 'gb',
+  'Game Boy Color': 'gbc',
+  'Game Boy Advance': 'gba',
+  'PlayStation': 'psx',
+  'PS1': 'psx',
+  'Nintendo 64': 'n64',
+};
+
 // Coleções de jogos abandonware e software na Internet Archive
 const IA_COLLECTIONS = [
   { id: 'softwarelibrary_msdos', name: 'MS-DOS Games', platform: 'MS-DOS' },
@@ -9,6 +30,19 @@ const IA_COLLECTIONS = [
   { id: 'classicpcgames', name: 'Classic PC Games', platform: 'PC' },
   { id: 'softwarelibrary', name: 'Software Library', platform: 'Various' },
 ];
+
+function normalizeSlug(value: string) {
+  return value
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+function getConsoleIdForPlatform(platform: string) {
+  return PLATFORM_TO_CONSOLE[platform] ?? 'dos';
+}
 
 export async function searchArchiveGames(options: ProviderSearchOptions = {}): Promise<SearchResult> {
   try {
@@ -50,8 +84,12 @@ export async function searchArchiveGames(options: ProviderSearchOptions = {}): P
         }
       }
 
+      const consoleId = getConsoleIdForPlatform(collection.platform);
       games.push({
         id: `ia-${item.identifier}`,
+        slug: normalizeSlug(item.identifier),
+        consoleId,
+        archiveId: item.identifier,
         title: item.title,
         description: item.description || `Jogo ${collection.platform} da coleção ${collection.name}`,
         provider: 'archive',
@@ -63,11 +101,12 @@ export async function searchArchiveGames(options: ProviderSearchOptions = {}): P
         releaseDate: item.year,
         playUrl: `${IA_BASE}/details/${item.identifier}`,
         downloadUrl: `${IA_BASE}/download/${item.identifier}`,
+        archiveFile: undefined,
         tags: [collection.platform, 'abandonware', 'classic'],
         isFree: true,
         isOpenSource: false,
         isAbandonware: true,
-        isBrowserGame: false,
+        isBrowserGame: true,
         developer: item.creator,
       });
     }
@@ -82,6 +121,9 @@ function getArchiveFallback(options: ProviderSearchOptions): SearchResult {
   const mockGames: CuratedGame[] = [
     {
       id: 'ia-doom',
+      slug: 'doom',
+      consoleId: 'dos',
+      archiveId: 'DOOM_201405',
       title: 'DOOM',
       description: 'O jogo de tiro em primeira pessoa que revolucionou a indústria.',
       provider: 'archive',
@@ -93,6 +135,7 @@ function getArchiveFallback(options: ProviderSearchOptions): SearchResult {
       releaseDate: '1993',
       playUrl: 'https://archive.org/details/DOOM_201405',
       downloadUrl: 'https://archive.org/download/DOOM_201405/',
+      archiveFile: undefined,
       tags: ['fps', 'classic', 'abandonware'],
       isFree: true,
       isOpenSource: true,

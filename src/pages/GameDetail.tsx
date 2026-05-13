@@ -12,6 +12,7 @@ export default function GameDetail() {
   const [game, setGame] = useState<CuratedGame | null>(null);
   const [loading, setLoading] = useState(true);
   const [playing, setPlaying] = useState(false);
+  const [playError, setPlayError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadGame = async () => {
@@ -33,12 +34,28 @@ export default function GameDetail() {
     loadGame();
   }, [gameId]);
 
+  const isArchiveNativeLaunch = !!game && (game.provider === 'archive' || game.playUrl?.includes('archive.org'));
+
   const handlePlay = () => {
     if (!canPlay()) {
       navigate('/plans');
       return;
     }
     incrementPlay();
+
+    if (isArchiveNativeLaunch) {
+      if (game?.consoleId && game?.slug) {
+        setPlayError(null);
+        navigate(`/play/${game.consoleId}/${game.slug}`);
+        return;
+      }
+
+      setPlayError(
+        'Este jogo do Archive.org precisa de metadados de console/slug para abrir no emulador nativo. Por enquanto, ele não pode ser exibido diretamente nesta plataforma.'
+      );
+      return;
+    }
+
     if (game?.isBrowserGame && game.playUrl) {
       setPlaying(true);
     } else if (game?.playUrl) {
@@ -135,7 +152,7 @@ export default function GameDetail() {
                   className="w-full py-3.5 bg-white text-[#0f0f1a] rounded-xl font-bold text-sm hover:bg-white/90 transition-colors flex items-center justify-center gap-2"
                 >
                   <Play className="w-4 h-4 fill-current" />
-                  Jogar no Navegador
+                  {isArchiveNativeLaunch ? 'Jogar na Plataforma' : 'Jogar no Navegador'}
                 </button>
               )}
 
@@ -159,6 +176,11 @@ export default function GameDetail() {
                 </button>
               )}
 
+              {playError && (
+                <div className="rounded-2xl bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-100 mb-4">
+                  {playError}
+                </div>
+              )}
               <div className="flex gap-2">
                 <button className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/60 hover:text-white text-xs font-medium transition-colors flex items-center justify-center gap-1.5">
                   <Heart className="w-3.5 h-3.5" />
@@ -277,7 +299,7 @@ export default function GameDetail() {
       </div>
 
       {/* Browser Game Player */}
-      {playing && game.isBrowserGame && game.playUrl && (
+      {playing && game.isBrowserGame && game.playUrl && !isArchiveNativeLaunch && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

@@ -23,12 +23,36 @@ export default async function handler(req) {
   const { searchParams } = new URL(req.url);
   const id          = searchParams.get('id');
   const consoleId   = searchParams.get('console') ?? 'nes';
+  const fileName    = searchParams.get('file');
 
   if (!id) {
     return new Response(JSON.stringify({ error: 'id obrigatório' }), { status: 400 });
   }
 
-  // 1. Busca metadata do item no Archive.org
+  // 1. Se arquivo específico foi informado, use o download direto
+  if (fileName) {
+    const romUrl = `https://archive.org/download/${id}/${encodeURIComponent(fileName)}`;
+    try {
+      const upstream = await fetch(romUrl);
+      if (!upstream.ok) {
+        return new Response(JSON.stringify({ error: 'Falha ao baixar ROM' }), { status: 502 });
+      }
+
+      return new Response(upstream.body, {
+        status: 200,
+        headers: {
+          'Content-Type':        'application/octet-stream',
+          'Content-Disposition': `attachment; filename="${fileName}"`,
+          'Cache-Control':       'public, max-age=86400, stale-while-revalidate=3600',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    } catch (e) {
+      return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
+    }
+  }
+
+  // 2. Busca metadata do item no Archive.org
   let files;
   try {
     const metaRes = await fetch(`https://archive.org/metadata/${id}/files`, {

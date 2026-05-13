@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { ArrowLeft, Gamepad2, Keyboard } from 'lucide-react';
 import NativeEmulator from '../components/NativeEmulator';
-import { searchByTitle, type ArchiveGame } from '../lib/archiveSearch';
+import { getArchiveGameByIdentifier, searchByTitle, type ArchiveGame } from '../lib/archiveSearch';
+import { getGameBySlug } from '../lib/gamesDb';
 
 const CONSOLE_LABELS: Record<string, string> = {
   nes: 'Nintendo Entertainment System', snes: 'Super Nintendo',
@@ -21,36 +22,81 @@ const DEFAULT_CONTROLS: Record<string, { label: string; key: string }[]> = {
 };
 
 export default function GamePlay() {
-  const { consoleId = 'nes', slug = '' } = useParams<{ consoleId: string; slug: string }>();
+  const { consoleId = 'nes', gameSlug = '' } = useParams<{ consoleId: string; gameSlug: string }>();
   const navigate = useNavigate();
   const [game, setGame] = useState<ArchiveGame | null>(null);
   const [loading, setLoading] = useState(true);
   const [showControls, setShowControls] = useState(false);
 
   useEffect(() => {
-    if (!slug) return;
-    if (/^[a-zA-Z0-9_\-]+$/.test(slug)) {
-      setGame({ id: slug, identifier: slug,
-        title: slug.replace(/[_\-]+/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        consoleId, embedUrl: '',
-        thumbnailUrl: `https://archive.org/services/img/${slug}`,
-      });
+    if (!gameSlug) return;
+
+    const loadGame = async () => {
+      const localGame = getGameBySlug(consoleId, gameSlug);
+      if (localGame && localGame.archiveId) {
+        setGame({
+          id: localGame.id,
+          identifier: localGame.archiveId,
+          title: localGame.title,
+          consoleId,
+          embedUrl: '',
+          thumbnailUrl: `https://archive.org/services/img/${localGame.archiveId}`,
+          archiveFile: localGame.archiveFile,
+        });
+        setLoading(false);
+        return;
+      }
+
+      const archiveById = await getArchiveGameByIdentifier(gameSlug, consoleId);
+      if (archiveById) {
+        setGame(archiveById);
+        setLoading(false);
+        return;
+      }
+
+      const titleQuery = localGame?.title ?? decodeURIComponent(gameSlug).replace(/-/g, ' ');
+      const results = await searchByTitle(titleQuery, consoleId, 1);
+      if (results.length > 0) {
+        setGame(results[0]);
+      } else if (localGame) {
+        setGame({
+          id: localGame.id,
+          identifier: localGame.archiveId ?? localGame.slug,
+          title: localGame.title,
+          consoleId,
+          embedUrl: '',
+          thumbnailUrl: `https://archive.org/services/img/${localGame.archiveId ?? localGame.slug}`,
+          archiveFile: localGame.archiveFile,
+        });
+      } else {
+        setGame(null);
+      }
       setLoading(false);
-      return;
-    }
-    const titleQuery = decodeURIComponent(slug).replace(/-/g, ' ');
-    searchByTitle(titleQuery, consoleId, 1).then(results => {
-      setGame(results[0] ?? { id: slug, identifier: slug, title: titleQuery, consoleId, embedUrl: '' });
-      setLoading(false);
-    });
-  }, [slug, consoleId]);
+    };
+
+    loadGame();
+  }, [gameSlug, consoleId]);
 
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0f' }}>
       <span style={{ color: '#555', fontSize: 14 }}>Carregando…</span>
     </div>
   );
-  if (!game) return null;
+  if (!game) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0f' }}>
+        <div style={{ textAlign: 'center', padding: 24, borderRadius: 20, background: '#11131d', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <p style={{ color: '#fff', fontSize: 18, marginBottom: 12 }}>Jogo não encontrado ou não disponível no Archive.org.</p>
+          <button
+            onClick={() => navigate(-1)}
+            style={{ padding: '10px 18px', borderRadius: 12, background: '#6366f1', border: 'none', color: '#fff', cursor: 'pointer' }}
+          >
+            Voltar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const controls = DEFAULT_CONTROLS[consoleId] ?? DEFAULT_CONTROLS.default;
 
@@ -74,7 +120,7 @@ export default function GamePlay() {
         {/* Emulador */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '24px', overflow: 'auto' }}>
           <div style={{ width: '100%', maxWidth: 900 }}>
-            <NativeEmulator gameId={game.identifier} consoleId={game.consoleId} title={game.title} />
+            <NativeEmulator gameId={game.identifier} consoleId={game.consoleId} title={game.title} archiveFile={game.archiveFile} />
           </div>
         </div>
 

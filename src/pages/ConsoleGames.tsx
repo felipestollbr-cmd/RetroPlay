@@ -5,6 +5,7 @@ import { ArrowLeft, Lock, Search } from 'lucide-react';
 import { getConsoleById } from '../lib/consoles';
 import { getGamesForConsole } from '../lib/gamesDb';
 import type { GameEntry } from '../lib/gamesDb';
+import type { CuratedGame } from '../lib/providers';
 import GameCard from '../components/GameCard';
 import SearchBar from '../components/SearchBar';
 import { canPlay, incrementPlay, getAvailableConsoles } from '../lib/subscription';
@@ -33,12 +34,13 @@ export default function ConsoleGames() {
     );
   }, [allGames, searchQuery]);
 
-  const handlePlay = (game: GameEntry) => {
+  const handlePlay = (game: CuratedGame | GameEntry) => {
     if (!canPlay()) {
       navigate('/plans');
       return;
     }
     incrementPlay();
+    if (!consoleId) return;
     navigate(`/play/${consoleId}/${game.slug}`);
   };
 

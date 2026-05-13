@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
 import { Play, Star, Gamepad2 } from 'lucide-react'; // 'G' maiúsculo
 import { useState } from 'react';
-import type { CuratedGame } from '../lib/providers'; 
+import type { CuratedGame } from '../lib/providers';
+import type { GameEntry } from '../lib/gamesDb';
 
 interface GameCardProps {
-  game: CuratedGame;
+  game: CuratedGame | GameEntry;
   index: number;
-  onPlay: (game: CuratedGame) => void;
+  onPlay: (game: CuratedGame | GameEntry) => void;
 }
 
 export default function GameCard({ game, index, onPlay }: GameCardProps) {
@@ -43,7 +44,7 @@ export default function GameCard({ game, index, onPlay }: GameCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         <div className="absolute top-2 left-2 bg-indigo-600 text-[10px] font-black px-2 py-0.5 rounded shadow-lg uppercase tracking-tighter text-white opacity-90">
-          {game.consoleId}
+          {('consoleId' in game ? game.consoleId : undefined) ?? 'Retro'}
         </div>
 
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -67,10 +68,10 @@ export default function GameCard({ game, index, onPlay }: GameCardProps) {
         </h3>
         <div className="flex items-center justify-between mt-1">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-medium text-white/40">{game.year || 'N/A'}</span>
+            <span className="text-[10px] font-medium text-white/40">{('year' in game ? game.year : undefined) ?? 'N/A'}</span>
             <span className="w-1 h-1 rounded-full bg-white/10" />
             <span className="text-[10px] font-medium text-white/40 truncate max-w-[80px]">
-              {game.genre || 'Classic'}
+              {Array.isArray(game.genre) ? game.genre[0] : game.genre || 'Classic'}
             </span>
           </div>
           <div className="text-indigo-400/50">

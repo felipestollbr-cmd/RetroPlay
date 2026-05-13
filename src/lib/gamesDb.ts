@@ -9,6 +9,8 @@ export interface GameEntry {
   genre: string;
   developer: string;
   players?: string;
+  archiveId?: string;
+  archiveFile?: string;
 }
 
 export const NES_GAMES: GameEntry[] = [
@@ -16,13 +18,17 @@ export const NES_GAMES: GameEntry[] = [
     id: 'nes-1', title: 'Super Mario Bros.', slug: 'super-mario-bros',
     description: 'O encanador Mario deve salvar a Princesa Peach do malvado Bowser.',
     coverUrl: 'https://upload.wikimedia.org/wikipedia/en/0/03/Super_Mario_Bros._box.png',
-    rating: 4.9, year: 1985, genre: 'Platformer', developer: 'Nintendo', players: '1-2'
+    rating: 4.9, year: 1985, genre: 'Platformer', developer: 'Nintendo', players: '1-2',
+    archiveId: 'SMB1Archive',
+    archiveFile: 'Super Mario Bros. [GoodSet - GoodNES V3.37].zip',
   },
   {
     id: 'nes-2', title: 'The Legend of Zelda', slug: 'the-legend-of-zelda',
     description: 'Link deve salvar a Princesa Zelda e o reino de Hyrule de Ganon.',
     coverUrl: 'https://upload.wikimedia.org/wikipedia/en/4/41/Legend_of_zelda_cover_%28with_cartridge%29_gold.png',
-    rating: 4.8, year: 1986, genre: 'Action-Adventure', developer: 'Nintendo', players: '1'
+    rating: 4.8, year: 1986, genre: 'Action-Adventure', developer: 'Nintendo', players: '1',
+    archiveId: 'the-legend-of-zelda-dark-labyrinth-pacnsacdave-nes-homebrew-game',
+    archiveFile: 'Zelda - Dark Labyrinth.zip',
   },
   {
     id: 'nes-3', title: 'Mega Man 2', slug: 'mega-man-2',
@@ -79,13 +85,17 @@ export const SNES_GAMES: GameEntry[] = [
     id: 'snes-1', title: 'Super Mario World', slug: 'super-mario-world',
     description: 'Mario e Yoshi exploram Dinosaur Land para salvar a Princesa Peach.',
     coverUrl: 'https://upload.wikimedia.org/wikipedia/en/3/32/Super_Mario_World_Coverart.png',
-    rating: 4.9, year: 1990, genre: 'Platformer', developer: 'Nintendo', players: '1-2'
+    rating: 4.9, year: 1990, genre: 'Platformer', developer: 'Nintendo', players: '1-2',
+    archiveId: 'super-mario-world-utsurun-desu',
+    archiveFile: 'super utsurun world.sfc',
   },
   {
     id: 'snes-2', title: 'The Legend of Zelda: A Link to the Past', slug: 'zelda-link-to-the-past',
     description: 'Link viaja entre o mundo da luz e o mundo das trevas para salvar Hyrule.',
     coverUrl: 'https://upload.wikimedia.org/wikipedia/en/2/22/The_Legend_of_Zelda_A_Link_to_the_Past_SNES_Game_Cover.jpg',
-    rating: 4.9, year: 1991, genre: 'Action-Adventure', developer: 'Nintendo', players: '1'
+    rating: 4.9, year: 1991, genre: 'Action-Adventure', developer: 'Nintendo', players: '1',
+    archiveId: 'legend-of-zelda-the-a-link-to-the-past',
+    archiveFile: 'Legend of Zelda, The_ A Link to the Past.zip',
   },
   {
     id: 'snes-3', title: 'Super Metroid', slug: 'super-metroid',
@@ -306,6 +316,10 @@ const ALL_GAMES: Record<string, GameEntry[]> = {
 
 export function getGamesForConsole(consoleId: string): GameEntry[] {
   return ALL_GAMES[consoleId] || [];
+}
+
+export function getGameBySlug(consoleId: string, slug: string): GameEntry | undefined {
+  return getGamesForConsole(consoleId).find((game) => game.slug === slug);
 }
 
 export function searchGames(query: string): GameEntry[] {

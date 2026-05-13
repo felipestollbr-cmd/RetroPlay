@@ -123,11 +123,37 @@ export interface UserSubscription {
 }
 
 const STORAGE_KEY = 'retroplay_user';
+const USER_STORE_KEY = 'retroplay_users';
 const ANON_AI_KEY = 'retroplay_anon_ai_count';
 const ANON_AI_DATE_KEY = 'retroplay_anon_ai_date';
 
 function isAdminEmail(email: string): boolean {
   return email.toLowerCase().trim() === ADMIN_EMAIL;
+}
+
+function getUserStore(): UserSubscription[] {
+  try {
+    const data = localStorage.getItem(USER_STORE_KEY);
+    return data ? (JSON.parse(data) as UserSubscription[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveUserStore(users: UserSubscription[]): void {
+  localStorage.setItem(USER_STORE_KEY, JSON.stringify(users));
+}
+
+function getUserByEmail(email: string): UserSubscription | null {
+  const normalized = email.toLowerCase().trim();
+  return getUserStore().find((user) => user.email === normalized) ?? null;
+}
+
+export function loginUser(email: string): UserSubscription | null {
+  const user = getUserByEmail(email);
+  if (!user) return null;
+  saveUser(user);
+  return user;
 }
 
 export function getUser(): UserSubscription | null {
@@ -157,14 +183,33 @@ export function getUser(): UserSubscription | null {
 
 export function saveUser(user: UserSubscription): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+  const users = getUserStore();
+  const existingIndex = users.findIndex((item) => item.email === user.email);
+  if (existingIndex >= 0) {
+    users[existingIndex] = user;
+  } else {
+    users.push(user);
+  }
+  saveUserStore(users);
 }
 
 export function createUser(email: string, name: string, plan: PlanType = 'free'): UserSubscription {
-  const isAdmin = isAdminEmail(email);
+  const normalizedEmail = email.toLowerCase().trim();
+  const existing = getUserByEmail(normalizedEmail);
+  const isAdmin = isAdminEmail(normalizedEmail);
   const today = new Date().toISOString().split('T')[0];
+
+  if (existing) {
+    existing.name = name;
+    existing.plan = isAdmin ? 'premium' : existing.plan;
+    existing.isAdmin = isAdmin;
+    saveUser(existing);
+    return existing;
+  }
+
   const user: UserSubscription = {
     plan: isAdmin ? 'premium' : plan,
-    email: email.toLowerCase().trim(),
+    email: normalizedEmail,
     name,
     isAdmin,
     dailyStats: { date: today, searches: 0, plays: 0, aiSearches: 0 },

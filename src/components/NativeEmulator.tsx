@@ -45,6 +45,7 @@ interface NativeEmulatorProps {
   gameId: string;      // Archive.org identifier
   consoleId: string;
   title: string;
+  archiveFile?: string;
 }
 
 // CSS para sobrescrever a UI padrão do EmulatorJS e deixá-la com cara RetroPlay
@@ -73,7 +74,7 @@ const EMULATOR_STYLE = `
 
 let instanceCount = 0;
 
-export default function NativeEmulator({ gameId, consoleId, title }: NativeEmulatorProps) {
+export default function NativeEmulator({ gameId, consoleId, title, archiveFile }: NativeEmulatorProps) {
   const [status, setStatus]   = useState<'loading' | 'ready' | 'error'>('loading');
   const [muted, setMuted]     = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
@@ -91,7 +92,7 @@ export default function NativeEmulator({ gameId, consoleId, title }: NativeEmula
 
     const containerId = instanceId.current;
     const core = EJS_CORES[consoleId] ?? 'nes';
-    const romUrl = `/api/rom?id=${encodeURIComponent(gameId)}&console=${encodeURIComponent(consoleId)}`;
+    const romUrl = `/api/rom?id=${encodeURIComponent(gameId)}&console=${encodeURIComponent(consoleId)}${archiveFile ? `&file=${encodeURIComponent(archiveFile)}` : ''}`;
 
     // Injeta estilos
     const style = document.createElement('style');

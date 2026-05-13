@@ -13,6 +13,8 @@ export interface GameProvider {
 export interface CuratedGame {
   id: string;
   title: string;
+  slug?: string;
+  consoleId?: string;
   description: string;
   provider: string;
   providerName: string;
@@ -22,9 +24,12 @@ export interface CuratedGame {
   bannerUrl?: string;
   screenshotUrls?: string[];
   rating: number;
+  year?: string;
   releaseDate?: string;
   playUrl?: string;
   downloadUrl?: string;
+  archiveId?: string;
+  archiveFile?: string;
   steamAppId?: string;
   itchIoUrl?: string;
   tags: string[];
